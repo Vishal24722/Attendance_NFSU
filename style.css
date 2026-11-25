@@ -1,16 +1,17 @@
-/* Custom CSS animations and scanner laser line */
+/* Clean, disciplined styling for NFSU Student Portal */
 body {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
 
 #reader {
   width: 100% !important;
   border: none !important;
+  background: #000;
 }
 
 #reader video {
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   object-fit: cover;
   width: 100% !important;
 }
@@ -21,24 +22,15 @@ body {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #3b82f6, #60a5fa, transparent);
-  box-shadow: 0 0 12px #3b82f6;
+  background: #2563EB;
+  box-shadow: 0 0 8px #2563EB;
   animation: laserScan 2s infinite ease-in-out;
   pointer-events: none;
   z-index: 10;
 }
 
 @keyframes laserScan {
-  0% { top: 5%; opacity: 0.2; }
+  0% { top: 5%; opacity: 0.3; }
   50% { top: 90%; opacity: 1; }
-  100% { top: 5%; opacity: 0.2; }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out forwards;
+  100% { top: 5%; opacity: 0.3; }
 }

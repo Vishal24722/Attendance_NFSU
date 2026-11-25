@@ -17,6 +17,7 @@ const inputRoll = document.getElementById("inputRoll");
 const inputName = document.getElementById("inputName");
 const displayRoll = document.getElementById("displayRoll");
 const displayName = document.getElementById("displayName");
+const displayFullId = document.getElementById("displayFullId");
 const deviceSummary = document.getElementById("deviceSummary");
 
 const scanModeBox = document.getElementById("scanModeBox");
@@ -90,6 +91,7 @@ function loadSavedProfile() {
     const fullId = `250423004${pad}`;
     displayRoll.textContent = `#${rInt < 10 ? '0' + rInt : rInt}`;
     displayName.textContent = `${savedName}`;
+    if (displayFullId) displayFullId.textContent = fullId;
     inputRoll.value = savedRoll;
     inputName.value = savedName;
     profileDisplay.classList.remove("hidden");
