@@ -50,11 +50,14 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function initRosterDropdown() {
-  inputRoll.innerHTML = '<option value="">Select your roll number (1 - 46)...</option>';
-  for (let i = 1; i <= 46; i++) {
+  inputRoll.innerHTML = '<option value="">Select your roll number...</option>';
+  for (let i = 1; i <= 47; i++) {
+    if (i === 19) continue; // Roll 19 does not exist
+    const pad = (i < 10 ? "00" : (i < 100 ? "0" : "")) + i;
+    const fullId = `250423004${pad}`;
     const opt = document.createElement("option");
     opt.value = i;
-    opt.textContent = `Roll #${i}`;
+    opt.textContent = `Roll #${i < 10 ? '0' + i : i} (${fullId})`;
     inputRoll.appendChild(opt);
   }
 }
@@ -82,8 +85,11 @@ function loadSavedProfile() {
   const savedName = localStorage.getItem("STUDENT_NAME");
 
   if (savedRoll && savedName) {
-    displayRoll.textContent = `#${savedRoll}`;
-    displayName.textContent = savedName;
+    const rInt = parseInt(savedRoll, 10);
+    const pad = (rInt < 10 ? "00" : (rInt < 100 ? "0" : "")) + rInt;
+    const fullId = `250423004${pad}`;
+    displayRoll.textContent = `#${rInt < 10 ? '0' + rInt : rInt}`;
+    displayName.textContent = `${savedName}`;
     inputRoll.value = savedRoll;
     inputName.value = savedName;
     profileDisplay.classList.remove("hidden");
