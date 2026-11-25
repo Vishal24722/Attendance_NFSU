@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Student Attendance Portal</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563EB">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-['Plus_Jakarta_Sans'] antialiased">
+  <!-- Top Navigation Header -->
+  <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700/60 sticky top-0 z-40 px-4 py-3.5 flex items-center justify-between">
+    <div class="flex items-center space-x-2.5">
+      <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20 text-white font-bold">
+        🎓
+      </div>
+      <div>
+        <h1 class="text-sm font-bold tracking-tight text-white leading-tight">Class Attendance</h1>
+        <p class="text-[11px] text-blue-400 font-medium">Anti-Proxy Verified Portal</p>
+      </div>
+    </div>
+    <div id="deviceBadge" class="text-[10px] bg-slate-700/80 text-slate-300 px-2 py-1 rounded-md border border-slate-600/50 flex items-center space-x-1">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+      <span id="deviceSummary">Device Ready</span>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-md w-full mx-auto p-4 flex flex-col justify-between">
+    
+    <!-- Profile / Student Information Card -->
+    <div class="bg-slate-800/90 border border-slate-700/80 rounded-2xl p-4 shadow-xl mb-4">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Student Profile</span>
+        <button id="editProfileBtn" class="text-xs text-blue-400 hover:text-blue-300 font-medium">Edit Info</button>
+      </div>
+
+      <div id="profileDisplay" class="flex items-center space-x-3.5">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-extrabold text-lg text-white shadow-md">
+          <span id="displayRoll">#--</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h2 id="displayName" class="text-base font-bold text-white truncate">Please Set Your Name</h2>
+          <p class="text-xs text-slate-400">Device Locked • Proxy Shield Active</p>
+        </div>
+      </div>
+
+      <!-- Profile Edit Form (Hidden if already saved) -->
+      <form id="profileForm" class="hidden mt-3 pt-3 border-t border-slate-700/60 space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Roll Number (1 - 46)</label>
+          <select id="inputRoll" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+            <option value="">Select your roll number...</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Full Name</label>
+          <input type="text" id="inputName" placeholder="e.g. John Doe" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-xl text-sm transition">
+          Save Details
+        </button>
+      </form>
+    </div>
+
+    <!-- Scanner / Action Box -->
+    <div id="actionContainer" class="flex-1 flex flex-col justify-center">
+      
+      <!-- State 1: Ready to Scan -->
+      <div id="scanModeBox" class="bg-slate-800/60 border border-slate-700/60 rounded-3xl p-6 text-center shadow-2xl relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-3xl">
+          📷
+        </div>
+        
+        <h3 class="text-lg font-bold text-white mb-1">Scan Live QR Code</h3>
+        <p class="text-xs text-slate-400 mb-6 max-w-xs mx-auto">
+          Point your camera at the CR's phone screen. The QR code refreshes every few seconds to stop proxy forwarding.
+        </p>
+
+        <!-- QR Camera Viewport -->
+        <div id="reader-wrapper" class="hidden mb-4 relative rounded-2xl overflow-hidden border-2 border-blue-500/50">
+          <div id="reader" class="w-full"></div>
+          <div class="scanner-laser"></div>
+        </div>
+
+        <button id="startScanBtn" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 px-6 rounded-2xl text-sm shadow-lg shadow-blue-500/25 active:scale-[0.98] transition flex items-center justify-center space-x-2">
+          <span>Start Camera Scanner</span>
+        </button>
+
+        <button id="stopScanBtn" class="hidden w-full mt-2 bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold py-2.5 rounded-xl text-xs transition">
+          Close Camera
+        </button>
+      </div>
+
+      <!-- State 2: Processing Status / Spinner -->
+      <div id="processingBox" class="hidden bg-slate-800 border border-slate-700 rounded-3xl p-8 text-center shadow-2xl">
+        <div class="w-14 h-14 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <h3 class="text-lg font-bold text-white mb-1">Verifying Token...</h3>
+        <p class="text-xs text-slate-400">Validating dynamic QR timestamp & device hardware lock...</p>
+      </div>
+
+      <!-- State 3: Success Banner -->
+      <div id="successBox" class="hidden bg-emerald-950/60 border border-emerald-500/50 rounded-3xl p-6 text-center shadow-2xl animate-fade-in">
+        <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-3xl">
+          ✅
+        </div>
+        <h3 class="text-xl font-extrabold text-emerald-400 mb-1">Marked Present!</h3>
+        <p id="successDetails" class="text-sm text-slate-200 font-medium mb-3">Roll #14 • Rahul Verma</p>
+        
+        <div class="bg-slate-900/60 rounded-xl p-3 text-xs text-slate-400 space-y-1 mb-4 border border-slate-800">
+          <div class="flex justify-between">
+            <span>Subject:</span>
+            <span id="successSubject" class="font-semibold text-slate-200">Maths Lecture</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Time:</span>
+            <span id="successTime" class="font-semibold text-slate-200">10:55 AM</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Status:</span>
+            <span class="font-bold text-emerald-400">Verified & Synced</span>
+          </div>
+        </div>
+
+        <button id="scanAgainBtn" class="text-xs text-slate-400 hover:text-white underline">
+          Done (Close)
+        </button>
+      </div>
+
+      <!-- State 4: Error / Proxy Blocked Banner -->
+      <div id="errorBox" class="hidden bg-rose-950/60 border border-rose-500/50 rounded-3xl p-6 text-center shadow-2xl animate-fade-in">
+        <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-rose-500/20 border border-rose-400/40 flex items-center justify-center text-3xl">
+          🚫
+        </div>
+        <h3 id="errorTitle" class="text-lg font-bold text-rose-400 mb-1">Attendance Rejected</h3>
+        <p id="errorMessage" class="text-xs text-slate-300 mb-5 leading-relaxed">
+          QR code has expired or proxy check failed.
+        </p>
+
+        <button id="retryBtn" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-semibold py-3 rounded-xl text-xs transition">
+          Try Again
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Footer Security Notice -->
+    <footer class="mt-6 text-center">
+      <div class="inline-flex items-center space-x-1.5 text-[11px] text-slate-400 bg-slate-800/40 px-3 py-1.5 rounded-full border border-slate-700/40">
+        <span>🔒</span>
+        <span>Anti-Proxy Protection: 1 Device = 1 Roll Number</span>
+      </div>
+    </footer>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
